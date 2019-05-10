@@ -1,19 +1,22 @@
-## Regiment - Whip your cluster into shape!
+## koa-regiment
 
-Regiment abuses the NodeJS cluster module in order to seamlessly replace workers after certain
-criteria is met. The goal is to keep the cluster up without dropping requests.
+_This is a fork of the [regiment middleware for Express](https://github.com/Hustle/regiment)._
+
+Whip your cluster into shape!
+
+Regiment abuses the NodeJS cluster module in order to seamlessly replace workers after certain criteria is met. The goal is to keep the cluster up without dropping requests.
 
 #### Installation
 ```sh
-npm install --save regiment
+npm install --save koa-regiment
 ```
 
-#### Usage w/ Express
+#### Usage w/ koa
 ```js
 var Regiment = require('regiment');
-var Express = require('express');
+var Koa = require('koa');
 
-var app = Express();
+var app = new Koa();
 
 // You can use either or both of the provided criteria middlewares, or contribute your own
 app.use(Regiment.middleware.MemoryFootprint(750)); // Replace workers after rss reaches 750mb
@@ -31,6 +34,10 @@ Regiment(function(workerId) { return app.listen(); }, options); // with options
   deadline: 5000, // Milliseconds to wait for worker to gracefully die before forcing death
 }
 ```
+
+#### Note
+
+If you're using `koa-joi-router`, make sure you use this middleware *before* the router, otherwise you won't have the benefits of it.
 
 #### Why would you want this?
 
@@ -66,8 +73,4 @@ for the worker to die by itself and then forcefully kill it.
  on a 2x dyno where we account for startup memory usage of the replacement worker being ~100mb and
  give it a bit of a cushion for memory to balloon during the deadline (grace period).
  - A deadline (grace period) of 30 seconds is optimal for heroku. This is now the default.
- - Requires Node >= 6.0.0
-
-#### Thanks
-
-I was heavily inspired by @hunterloftis's Throng library and Forky.
+ - Requires Node >= 8.0.0
